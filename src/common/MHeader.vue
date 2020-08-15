@@ -61,8 +61,8 @@
               <!-- 购物车 -->
               <div
                 class="shop pr"
-                @mouseenter="cartShowState(true)"
-                @mouseleave="cartShowState(false)"
+                @mouseenter="toggleCart(true)"
+                @mouseleave="toggleCart(false)"
               >
                 <router-link to="/cart"></router-link>
                 <span class="cart-num">
@@ -149,8 +149,6 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { removeStore, getStore, setStore } from '@/utils/storage'
-
 export default {
   data () {
     return {
@@ -158,51 +156,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['login', 'userInfo', 'cartList', 'showCart']),
-    totalNum () {
-      return (
-        this.cartList &&
-        this.cartList.reduce((total, item) => {
-          total += item.productNum
-          return total
-        }, 0)
-      )
-    },
-    totalPrice () {
-      return (
-        this.cartList &&
-        this.cartList.reduce((total, item) => {
-          total += item.productNum * item.salePrice
-          return total
-        }, 0)
-      )
-    }
-  },
-  async mounted () {
-    if (this.login) {
-      const res = await this.$http.post('/api/cartList', { userId: getStore('id') })
-      if (res.data.success === true) {
-        setStore('buyCart', res.data.cartList.cartList)
-        this.INITBUYCART()
-      }
-    } else {
-      this.INITBUYCART()
-    }
+    ...mapState(['login', 'userInfo', 'cartList', 'showCart'])
   },
   methods: {
-    ...mapMutations(['SHOWCART', 'INITBUYCART']),
-    cartShowState (state) {
+    ...mapMutations(['SHOWCART']),
+    toggleCart (state) {
       this.SHOWCART({
         showCart: state
       })
-    },
-    logout () {
-      removeStore('token')
-      removeStore('buyCart')
-      window.location.href = '/'
     }
-  },
-  created () {}
+  }
 }
 </script>
 

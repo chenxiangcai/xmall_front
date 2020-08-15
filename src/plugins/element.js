@@ -9,7 +9,8 @@ import {
   Row,
   Card,
   Col,
-  Pagination
+  Pagination,
+  InputNumber
 } from 'element-ui'
 
 Vue.use(Button)
@@ -22,3 +23,4 @@ Vue.use(Row)
 Vue.use(Card)
 Vue.use(Col)
 Vue.use(Pagination)
+Vue.use(InputNumber)

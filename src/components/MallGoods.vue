@@ -12,7 +12,7 @@
         <div class="good-price pr">
           <div class="ds pa">
             <a href='javascript:;'>
-              <el-button>查看详情</el-button>
+              <el-button @click="productDetail(goods.productId)">查看详情</el-button>
             </a>
             <a href="javascript:;">
               <el-button>加入购物车</el-button>
@@ -30,7 +30,17 @@
 <script>
 
 export default {
-  props: ['goods']
+  props: ['goods'],
+  methods: {
+    productDetail (id) {
+      this.$router.push({
+        name: 'goodsDetail',
+        query: {
+          productId: id
+        }
+      })
+    }
+  }
 }
 </script>
 

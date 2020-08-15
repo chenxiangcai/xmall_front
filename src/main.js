@@ -7,6 +7,19 @@ import axios from 'axios'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
+
+// 全局守卫
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(value => value.meta.auth)) {
+    next({
+      path: 'login',
+      query: {
+        redirect: to.fullPath
+      }
+    })
+  }
+  next()
+})
 new Vue({
   router,
   store,

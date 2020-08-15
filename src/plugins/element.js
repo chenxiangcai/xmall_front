@@ -8,7 +8,8 @@ import {
   CarouselItem,
   Row,
   Card,
-  Col
+  Col,
+  Pagination
 } from 'element-ui'
 
 Vue.use(Button)
@@ -20,3 +21,4 @@ Vue.use(Carousel)
 Vue.use(Row)
 Vue.use(Card)
 Vue.use(Col)
+Vue.use(Pagination)

@@ -58,13 +58,16 @@
 </template>
 <script>
 import BuyNum from '@/components/BuyNum'
+import { getStore } from '@/utils/storage'
+import { mapMutations } from 'vuex'
 export default {
   name: 'goodsDetails',
   data () {
     return {
       product: {},
       small: [],
-      big: ''
+      big: '',
+      num: 0
     }
   },
   components: {
@@ -74,6 +77,7 @@ export default {
     this.getGoodsDetail()
   },
   methods: {
+    ...mapMutations(['ADDCART']),
     async getGoodsDetail () {
       const { data: res } = await this.$http.get(`/api/goods/productDet?productId=${this.$route.query.productId}`)
       this.product = res
@@ -84,10 +88,32 @@ export default {
       this.big = pic
     },
     handleGoodsNum (num) {
-      console.log(num)
+      this.num = num
     },
     addToCart () {
-
+      if (this.login) {
+        this.$http.post('/api/addCart', {
+          userId: getStore('id'),
+          productId: this.product.productId,
+          productNum: this.num
+        })
+        this.ADDCART({
+          productId: this.product.productId,
+          salePrice: this.product.salePrice,
+          productName: this.product.productName,
+          productImageBig: this.product.productImageBig,
+          productNum: this.num
+        })
+      } else {
+        // 如果用户未登录 也要将商品存储到store的cartList
+        this.ADDCART({
+          productId: this.product.productId,
+          salePrice: this.product.salePrice,
+          productName: this.product.productName,
+          productImageBig: this.product.productImageBig,
+          productNum: this.num
+        })
+      }
     }
   }
 }

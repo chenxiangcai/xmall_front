@@ -47,7 +47,7 @@ const fs = require('fs')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const bodyParser = require('body-parser')
-
+const cartListJSON = require('./db/cartList.json')
 module.exports = {
   devServer: {
     before (app, serve) {
@@ -186,6 +186,63 @@ module.exports = {
               state: 1
             })
           }
+        })
+      })
+
+      app.post('/api/addCart', (req, res) => {
+        const { userId, productId, productNum } = req.body
+        fs.readFile('./db/allGoods.json', (err, data) => {
+          const { result } = JSON.parse(data)
+          if (productId && userId) {
+            const { cartList } = cartListJSON.result.find(item => item.id == userId)
+            // 找到对应的商品
+            const newData = result.data.find(item => item.productId == productId)
+            newData.limitNum = 100
+
+            let falg = true
+            if (cartList && cartList.length) {
+              cartList.forEach(item => {
+                if (item.productId == productId) {
+                  if (item.productNum >= 1) {
+                    falg = false
+                    item.productNum += parseInt(productNum)
+                  }
+                }
+              })
+            }
+            if (!cartList.length || falg) { // 购物车为空
+              newData.productNum = parseInt(productNum)
+              cartList.push(newData)
+            }
+
+            // 序列化
+
+            fs.writeFile('./db/cartList.json', JSON.stringify(cartListJSON), (err) => {
+              if (!err) {
+                res.json({
+                  code: 200,
+                  message: 'success',
+                  result: 1,
+                  success: true,
+                  timestamp: 1571296313981
+                })
+              }
+            })
+          }
+        })
+      })
+
+      app.post('/api/cartList', (req, res) => {
+        const { userId } = req.body
+        fs.readFile('./db/cartList.json', (err, data) => {
+          const { result } = JSON.parse(data)
+          const newData = result.find(item => item.id == userId)
+          res.json({
+            code: 200,
+            cartList: newData,
+            success: true,
+            message: 'success'
+          })
         })
       })
     }

@@ -149,6 +149,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import { removeStore, getStore, setStore } from '@/utils/storage'
 export default {
   data () {
     return {
@@ -156,14 +157,48 @@ export default {
     }
   },
   computed: {
-    ...mapState(['login', 'userInfo', 'cartList', 'showCart'])
+    ...mapState(['login', 'userInfo', 'cartList', 'showCart']),
+    totalNum () {
+      return (
+        this.cartList &&
+        this.cartList.reduce((total, item) => {
+          total += item.productNum
+          return total
+        }, 0)
+      )
+    },
+    totalPrice () {
+      return (
+        this.cartList &&
+        this.cartList.reduce((total, item) => {
+          total += item.productNum * item.salePrice
+          return total
+        }, 0)
+      )
+    }
+  },
+  async mounted () {
+    if (this.login) {
+      const res = await this.$http.post('/api/cartList', { userId: getStore('id') })
+      if (res.data.success === true) {
+        setStore('buyCart', res.data.cartList.cartList)
+        this.INITBUYCART()
+      }
+    } else {
+      this.INITBUYCART()
+    }
   },
   methods: {
-    ...mapMutations(['SHOWCART']),
+    ...mapMutations(['SHOWCART', 'INITBUYCART']),
     toggleCart (state) {
       this.SHOWCART({
         showCart: state
       })
+    },
+    logout () {
+      removeStore('token')
+      removeStore('buyCart')
+      window.location.href = '/'
     }
   }
 }
@@ -259,7 +294,7 @@ header {
       -webkit-transform: translate3d(0, 59px, 0);
       transform: translate3d(0, 59px, 0);
       -webkit-transition: -webkit-transform 0.3s
-        cubic-bezier(0.165, 0.84, 0.44, 1);
+      cubic-bezier(0.165, 0.84, 0.44, 1);
       transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
       .user {
         &:hover {
@@ -313,7 +348,7 @@ header {
         top: 0;
         @include wh(20px);
         background: url(/static/images/account-icon@2x.32d87deb02b3d1c3cc5bcff0c26314ac.png) -155px
-          0;
+        0;
         background-size: 240px 107px;
         transition: none;
       }
@@ -410,7 +445,7 @@ header {
         @include wh(30px, 100%);
         content: " ";
         background: url(/static/images/account-icon@2x.32d87deb02b3d1c3cc5bcff0c26314ac.png)
-          0 -22px;
+        0 -22px;
         background-size: 240px 107px;
         background-position: -150px -22px;
       }
@@ -428,7 +463,7 @@ header {
         background-image: -webkit-linear-gradient(#eb746b, #e25147);
         background-image: linear-gradient(#eb746b, #e25147);
         box-shadow: inset 0 0 1px hsla(0, 0%, 100%, 0.15),
-          0 1px 2px hsla(0, 0%, 100%, 0.15);
+        0 1px 2px hsla(0, 0%, 100%, 0.15);
         text-align: center;
         font-style: normal;
         display: inline-block;
@@ -584,7 +619,7 @@ header {
       border-top: 1px solid #f0f0f0;
       border-radius: 0 0 8px 8px;
       box-shadow: inset 0 -1px 0 hsla(0, 0%, 100%, 0.5),
-        0 -3px 8px rgba(0, 0, 0, 0.04);
+      0 -3px 8px rgba(0, 0, 0, 0.04);
       background: -webkit-linear-gradient(#fafafa, #f5f5f5);
       background: linear-gradient(#fafafa, #f5f5f5);
       p {
@@ -657,7 +692,7 @@ header {
       position: absolute;
       content: " ";
       background: url(/static/images/account-icon@2x.32d87deb02b3d1c3cc5bcff0c26314ac.png)
-        no-repeat -49px -43px;
+      no-repeat -49px -43px;
       background-size: 240px 107px;
       @include wh(20px, 8px);
       top: -8px;

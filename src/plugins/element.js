@@ -10,7 +10,9 @@ import {
   Card,
   Col,
   Pagination,
-  InputNumber
+  InputNumber,
+  FormItem,
+  Form
 } from 'element-ui'
 
 Vue.use(Button)
@@ -24,3 +26,5 @@ Vue.use(Card)
 Vue.use(Col)
 Vue.use(Pagination)
 Vue.use(InputNumber)
+Vue.use(FormItem)
+Vue.use(Form)
